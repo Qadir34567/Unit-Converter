@@ -1,61 +1,71 @@
+
 import streamlit as st
+import re
 
-st.title("Unit Converter App")
+st.title(" Ultimate Password Strength Checker")
 
-st.markdown("### Convert length, weight, and time instantly.")
-st.write("Welcome! Select a conversion type from the category.")
+st.markdown("""
+    Welcome to the **Ultimate Password Strength Checker!**
+    Ensure your password is secure by checking:
+    - ✅ Length
+    - ✅ Upper & Lowercase letters
+    - ✅ Numbers
+    - ✅ Special characters
+    Improve your online privacy by creating strong passwords!""")
 
-category = st.selectbox("Choose a category", ["Length", "Weight", "Time"])
+password = st.text_input("Enter your password:", type="password")
 
+def check_password_strength(password):
+    score = 0
+    feedback = []
 
-def convert_units(category, value, unit):
-    if category == "Length":
-        if unit == "Kilometers to Miles":
-            return value * 0.621371
-        elif unit == "Miles to Kilometers":
-            return value / 0.621371
-
-    elif category == "Weight":
-        if unit == "Kilograms to pounds":
-            return value * 2.20462
-        elif unit == "Pounds to kilograms":
-            return value / 2.20462
-
-    elif category == "Time":
-        if unit == "Seconds to minutes":
-            return value / 60
-        elif unit == "Minutes to seconds":
-            return value * 60
-        elif unit == "Minutes to hours":
-            return value / 60
-        elif unit == "Hours to minutes":
-            return value * 60
-        elif unit == "Hours to days":
-            return value / 24
-        elif unit == "Days to hours":
-            return value * 24
-
-if category == "Length":
-    unit = st.selectbox("Select Conversion", ["Miles to Kilometers", "Kilometers to Miles"])
-elif category == "Weight":
-    unit = st.selectbox("Select Conversion", ["Kilograms to pounds", "Pounds to kilograms"])
-elif category == "Time":
-    unit = st.selectbox("Select Conversion", ["Seconds to minutes", "Minutes to seconds", "Minutes to hours", "Hours to minutes", "Hours to days", "Days to hours"])
-
-
-value = st.number_input("Enter the value to convert", min_value=0.0, step=1.0)
-
-
-if st.button("Convert"):
-    if not category:
-        st.error("Please choose a category.")
-    elif not unit:
-        st.error("Please select a conversion unit.")
-    elif value == 0.0:
-        st.error("Please enter a value greater than 0.")
+    # Check password length
+    if len(password) >= 8:
+        score += 1
     else:
-        result = convert_units(category, value, unit)
-        st.success(f"The result is {result:.2f}")
+        feedback.append("Password should be at least 8 characters long.")
+
+    # Check for uppercase and lowercase letters
+    if re.search(r"[A-Z]", password) and re.search(r"[a-z]", password):
+        score += 1
+    else:
+        feedback.append("Include both uppercase and lowercase letters.")
+
+    # Check for numbers
+    if re.search(r"\d", password):
+        score += 1
+    else:
+        feedback.append("Include at least one number (0-9).")
+
+    # Check for special characters
+    if re.search(r"[!@/?.>,<:!@#$)*%^&*]", password):
+        score += 1
+    else:
+        feedback.append("Include at least one special character (!@#$%^&*).")
+
+    return score, feedback
+
+# Button to Check Password
+if st.button("Check Password Strength"):
+    if password:
+        score, feedback = check_password_strength(password)
+
+        st.subheader("Password Strength Result:")
+
+        if score == 4:
+            st.success("Strong Password! Your password is secure.")
+        elif score == 3:
+            st.warning("Moderate Password - Consider adding more security features.")
+        else:
+            st.error("Weak Password - Improve it using the suggestions below.")
+        
+        if feedback:
+            st.info("Suggestions to improve your password:")
+            for tip in feedback:
+                st.write(tip)
+    else:
+        st.error("Please enter a password to check.")
+
 st.markdown(""" 
     Made with by ❤ Abdul Qadir
 """)
