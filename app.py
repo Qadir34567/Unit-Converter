@@ -56,3 +56,6 @@ if st.button("Convert"):
     else:
         result = convert_units(category, value, unit)
         st.success(f"The result is {result:.2f}")
+st.markdown(""" 
+    Made with by ❤ Abdul Qadir
+""")
